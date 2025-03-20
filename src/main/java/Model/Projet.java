@@ -1,49 +1,49 @@
 package Model;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class Projet {
-    private int id_projet;
-    private String nom;
+    private int idProjet;
+    private String nomProjet;
     private String description;
-    private LocalDate date_debut;
-    private LocalDate date_fin;
-    private int budget;
+    private  String dateDebut;
+    private  String dateFin;
+    private float budget;
 
-    public Projet(int id_projet, String nom, String description, LocalDate date_debut, LocalDate date_fin, int budget) {
-        this.id_projet = id_projet;
-        this.nom = nom;
+    public Projet() {
+    }
+
+    public Projet(String nomProjet, String description, String dateDebut, String dateFin, float budget) {
+        this.nomProjet = nomProjet;
         this.description = description;
-        this.date_debut = date_debut;
-        this.date_fin = date_fin;
+        this.dateDebut = dateDebut;
+        this.dateFin = dateFin;
         this.budget = budget;
     }
 
-    public Projet(String nom, String description, LocalDate date_debut, LocalDate date_fin, int budget) {
-        this.id_projet = id_projet;
-        this.nom = nom;
+    public Projet(int idProjet, String nomProjet, String description, String dateDebut, String dateFin, float budget) {
+        this.idProjet = idProjet;
+        this.dateDebut = dateDebut;
+        this.nomProjet = nomProjet;
         this.description = description;
-        this.date_debut = date_debut;
-        this.date_fin = date_fin;
+        this.dateFin = dateFin;
         this.budget = budget;
     }
 
-
-    public int getId_projet() {
-        return id_projet;
+    public int getIdProjet() {
+        return idProjet;
     }
 
-    public void setId_projet(int id_projet) {
-        this.id_projet = id_projet;
+    public void setIdProjet(int idProjet) {
+        this.idProjet = idProjet;
     }
 
-    public String getNom() {
-        return nom;
+    public String getNomProjet() {
+        return nomProjet;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setNomProjet(String nomProjet) {
+        this.nomProjet = nomProjet;
     }
 
     public String getDescription() {
@@ -54,43 +54,27 @@ public class Projet {
         this.description = description;
     }
 
-    public LocalDate getDate_debut() {
-        return date_debut;
+    public String getDateDebut() {
+        return dateDebut;
     }
 
-    public void setDate_debut(LocalDate date_debut) {
-        this.date_debut = date_debut;
+    public void setDateDebut(String dateDebut) {
+        this.dateDebut = dateDebut;
     }
 
-    public LocalDate getDate_fin() {
-        return date_fin;
+    public String getDateFin() {
+        return dateFin;
     }
 
-    public void setDate_fin(LocalDate date_fin) {
-        this.date_fin = date_fin;
+    public void setDateFin(String dateFin) {
+        this.dateFin = dateFin;
     }
 
-    public int getBudget() {
+    public float getBudget() {
         return budget;
     }
 
-    public void setBudget(int budget) {
+    public void setBudget(float budget) {
         this.budget = budget;
-    }
-
-    public Projet() {
-
-    }
-
-    @Override
-    public String toString() {
-        return "Projet{" +
-                "id_projet=" + id_projet +
-                ", nom='" + nom + '\'' +
-                ", description='" + description + '\'' +
-                ", date_debut=" + date_debut +
-                ", date_fin=" + date_fin +
-                ", budget=" + budget +
-                '}';
     }
 }

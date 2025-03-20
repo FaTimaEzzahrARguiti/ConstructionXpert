@@ -1,15 +1,17 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="Model.Projet" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Navbar et Tableau Responsive - ConstructionXpert</title>
+    <title>Gestion des Projets - ConstructionXpert</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* Reset CSS */
         * {
             margin: 0;
             padding: 0;
@@ -19,10 +21,9 @@
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
-            padding-top: 80px; /* Pour éviter que la navbar ne chevauche le contenu */
+            padding-top: 80px;
         }
 
-        /* Styles de la navbar */
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -45,7 +46,7 @@
         .logo i {
             margin-right: 10px;
             font-size: 2rem;
-            color: #f39c12; /* Couleur orange pour l'icône */
+            color: #f39c12;
         }
 
         .nav-links {
@@ -85,7 +86,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Animation pour le burger */
         .toggle .line1 {
             transform: rotate(-45deg) translate(-5px, 6px);
         }
@@ -98,7 +98,6 @@
             transform: rotate(45deg) translate(-5px, -6px);
         }
 
-        /* Responsive Design pour la navbar */
         @media screen and (max-width: 768px) {
             .nav-links {
                 position: absolute;
@@ -138,10 +137,9 @@
             }
         }
 
-        /* Styles du tableau */
         .table-container {
             padding: 2rem;
-            overflow-x: auto; /* Pour permettre le défilement horizontal sur les petits écrans */
+            overflow-x: auto;
         }
 
         table {
@@ -169,12 +167,10 @@
             background-color: #f5f5f5;
         }
 
-        /* Couleurs similaires à la navbar */
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
 
-        /* Bouton Ajouter un projet */
         .add-project-button {
             display: inline-block;
             margin: 1rem 2rem;
@@ -195,18 +191,46 @@
         .add-project-button i {
             margin-right: 8px;
         }
+
+        .action-btn {
+            padding: 5px 10px;
+            margin-right: 5px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background-color: #f39c12;
+        }
+
+        .edit-btn:hover {
+            background-color: #e67e22;
+            color: #fff;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 <nav class="navbar">
     <div class="logo">
-        <i class="fas fa-building"></i> <!-- Icône Font Awesome pour le logo -->
-        <span>ConstructionXpert</span> <!-- Texte à côté de l'icône -->
+        <i class="fas fa-building"></i>
+        <span>ConstructionXpert</span>
     </div>
     <ul class="nav-links">
         <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
-        <li><a href="#"><i class="fas fa-building"></i> Projets</a></li>
-        <li><a href="#"><i class="fas fa-tools"></i> Services</a></li>
+        <li><a href="<%=request.getContextPath()%>/projet?action=listprojet"><i class="fas fa-building"></i> Projets</a></li>
+        <li><a href="<%=request.getContextPath()%>/ressource?action=listressource"><i class="fas fa-box"></i> Ressources</a></li>
         <li><a href="#"><i class="fas fa-users"></i> Équipe</a></li>
         <li><a href="#"><i class="fas fa-chart-line"></i> Tableau de Bord</a></li>
     </ul>
@@ -217,97 +241,91 @@
     </div>
 </nav>
 
-<!-- Contenu principal avec le tableau -->
 <div class="table-container">
-    <!-- Bouton Ajouter un projet -->
-    <a ><button class="add-project-button" data-bs-toggle="modal" data-bs-target="#addProjectModal" onclick="openModal()">
+    <button class="add-project-button" data-bs-toggle="modal" data-bs-target="#projetModal" onclick="resetModal()">
         <i class="fas fa-plus"></i> Ajouter un projet
-    </button></a>
+    </button>
 
-    <!-- Tableau -->
     <table>
         <thead>
         <tr>
             <th>ID</th>
             <th>Projet</th>
-            <th>Responsable</th>
+            <th>Description</th>
             <th>Date de début</th>
-            <th>Statut</th>
+            <th>Date de fin</th>
+            <th>Budget</th>
+            <th>Actions</th>
         </tr>
         </thead>
-        <tbody>
+        <tbody id="project-table">
+        <%
+            List<Projet> projets = (List<Projet>) request.getAttribute("projets");
+            if (projets != null) {
+                for (Projet projet : projets) {
+        %>
         <tr>
-            <td>1</td>
-            <td>Construction immeuble A</td>
-            <td>Jean Dupont</td>
-            <td>2023-10-01</td>
-            <td>En cours</td>
+            <td><%= projet.getIdProjet() %></td>
+            <td><%= projet.getNomProjet() %></td>
+            <td><%= projet.getDescription() %></td>
+            <td><%= projet.getDateDebut() %></td>
+            <td><%= projet.getDateFin() %></td>
+            <td><%= projet.getBudget() %></td>
+            <td class="actions" style="width: 150px;">
+                <button class="action-btn edit-btn" onclick="fillModal('<%= projet.getIdProjet() %>', '<%= projet.getNomProjet() %>', '<%= projet.getDescription() %>', '<%= projet.getDateDebut() %>', '<%= projet.getDateFin() %>', '<%= projet.getBudget() %>')" data-bs-toggle="modal" data-bs-target="#projetModal"><i class="fas fa-edit"></i></button>
+                <button class="action-btn delete-btn" onclick="if(confirm('Confirmer la suppression ?')) window.location.href='<%=request.getContextPath()%>/projet?action=deleteprojet&id=<%=projet.getIdProjet()%>'"><i class="fas fa-trash-alt"></i></button>
+            </td>
         </tr>
-        <tr>
-            <td>2</td>
-            <td>Rénovation pont B</td>
-            <td>Marie Curie</td>
-            <td>2023-09-15</td>
-            <td>Terminé</td>
-        </tr>
-        <tr>
-            <td>3</td>
-            <td>Construction route C</td>
-            <td>Pierre Martin</td>
-            <td>2023-11-01</td>
-            <td>Planifié</td>
-        </tr>
-        <tr>
-            <td>4</td>
-            <td>Installation éclairage D</td>
-            <td>Sophie Lambert</td>
-            <td>2023-10-20</td>
-            <td>En cours</td>
-        </tr>
+        <%
+                }
+            }
+        %>
         </tbody>
     </table>
 </div>
 
-<!-- Modal Bootstrap pour ajouter un projet -->
-<div class="modal fade" id="addProjectModal" tabindex="-1" aria-labelledby="addProjectModalLabel" aria-hidden="true">
+<div class="modal fade" id="projetModal" tabindex="-1" aria-labelledby="projetModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addProjectModalLabel">Ajouter un projet</h5>
+                <h5 class="modal-title" id="projetModalLabel">Ajouter un projet</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="projectForm">
+                <form id="projetForm" action="<%=request.getContextPath()%>/projet?action=createprojet" method="post">
+                    <input type="hidden" id="idProjet" name="idProjet">
                     <div class="mb-3">
-                        <label for="projectName" class="form-label">Nom du projet</label>
-                        <input type="text" class="form-control" id="projectName" required>
+                        <label for="nomProjet" class="form-label">Nom du projet</label>
+                        <input type="text" class="form-control" id="nomProjet" name="nomProjet" required>
                     </div>
                     <div class="mb-3">
-                        <label for="projectManager" class="form-label">Responsable</label>
-                        <input type="text" class="form-control" id="projectManager" required>
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="projectStartDate" class="form-label">Date de début</label>
-                        <input type="date" class="form-control" id="projectStartDate" required>
+                        <label for="dateDebut" class="form-label">Date de début</label>
+                        <input type="date" class="form-control" id="dateDebut" name="dateDebut" required>
                     </div>
                     <div class="mb-3">
-                        <label for="projectDescription" class="form-label">Description</label>
-                        <textarea class="form-control" id="projectDescription" rows="3" required></textarea>
+                        <label for="datefin" class="form-label">Date de fin</label>
+                        <input type="date" class="form-control" id="datefin" name="datefin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="budget" class="form-label">Budget</label>
+                        <input type="number" step="0.01" class="form-control" id="budget" name="budget" required>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
-                <button type="submit" form="projectForm" class="btn btn-primary">Enregistrer</button>
+                <button type="submit" form="projetForm" class="btn btn-primary">Enregistrer</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap JS et dépendances -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
-
 <script>
     const navSlide = () => {
         const burger = document.querySelector('.burger');
@@ -315,10 +333,7 @@
         const navLinks = document.querySelectorAll('.nav-links li');
 
         burger.addEventListener('click', () => {
-            // Toggle Nav
             nav.classList.toggle('nav-active');
-
-            // Animate Links
             navLinks.forEach((link, index) => {
                 if (link.style.animation) {
                     link.style.animation = '';
@@ -326,31 +341,34 @@
                     link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
                 }
             });
-
-            // Burger Animation
             burger.classList.toggle('toggle');
         });
     }
 
     navSlide();
 
-    // Gestion du formulaire
-    document.getElementById('projectForm').addEventListener('submit', function (event) {
-        event.preventDefault();
-        const projectName = document.getElementById('projectName').value;
-        const projectManager = document.getElementById('projectManager').value;
-        const projectStartDate = document.getElementById('projectStartDate').value;
-        const projectDescription = document.getElementById('projectDescription').value;
+    function fillModal(id, nomProjet, description, dateDebut, datefin, budget) {
+        document.getElementById('projetModalLabel').innerText = 'Modifier un projet';
+        document.getElementById('idProjet').value = id;
+        document.getElementById('nomProjet').value = nomProjet;
+        document.getElementById('description').value = description;
+        document.getElementById('dateDebut').value = dateDebut;
+        document.getElementById('datefin').value = datefin;
+        document.getElementById('budget').value = budget;
+        document.getElementById('projetForm').action = '<%=request.getContextPath()%>/projet?action=updateprojet';
+        console.log("Modal rempli : ID=" + id + ", Nom=" + nomProjet + ", Action=" + document.getElementById('projetForm').action);
+    }
 
-        if (projectName && projectManager && projectStartDate && projectDescription) {
-            alert("Projet enregistré avec succès !");
-            // Fermer la modal
-            const modal = bootstrap.Modal.getInstance(document.getElementById('addProjectModal'));
-            modal.hide();
-        } else {
-            alert("Veuillez remplir tous les champs.");
-        }
-    });
+    function resetModal() {
+        document.getElementById('projetModalLabel').innerText = 'Ajouter un projet';
+        document.getElementById('idProjet').value = '';
+        document.getElementById('nomProjet').value = '';
+        document.getElementById('description').value = '';
+        document.getElementById('dateDebut').value = '';
+        document.getElementById('datefin').value = '';
+        document.getElementById('budget').value = '';
+        document.getElementById('projetForm').action = '<%=request.getContextPath()%>/projet?action=createprojet';
+    }
 </script>
 </body>
 </html>
