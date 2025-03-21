@@ -87,8 +87,6 @@ public class ProjetServlet extends HttpServlet {
         RequestDispatcher dispatcher = request.getRequestDispatcher("listprojet.jsp");
         request.setAttribute("projet", existingProjet);
         dispatcher.forward(request, response);
-
-
     }
     private void showNewForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         RequestDispatcher dispatcher = request.getRequestDispatcher("listprojet.jsp");

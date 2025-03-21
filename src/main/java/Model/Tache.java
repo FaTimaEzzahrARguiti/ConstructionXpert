@@ -8,18 +8,18 @@ public class Tache {
     private String date_debut;
     private String date_fin;
     private int id_projet;
-    private int id_ressource;
+
 
     public Tache() {
     }
 
-    public Tache(int id_tache, String nom, String date_debut, String date_fin, int id_projet, int id_ressource) {
+    public Tache(int id_tache, String nom, String date_debut, String date_fin, int id_projet) {
         this.id_tache = id_tache;
         this.nom = nom;
         this.date_debut = date_debut;
         this.date_fin = date_fin;
         this.id_projet = id_projet;
-        this.id_ressource = id_ressource;
+
     }
 
     public Tache(int id_tache, String nom, String date_debut, String date_fin) {
@@ -67,6 +67,7 @@ public class Tache {
         this.date_fin = date_fin;
     }
 
+
     public int getId_projet() {
         return id_projet;
     }
@@ -75,13 +76,9 @@ public class Tache {
         this.id_projet = id_projet;
     }
 
-    public int getId_ressource() {
-        return id_ressource;
-    }
 
-    public void setId_ressource(int id_ressource) {
-        this.id_ressource = id_ressource;
-    }
+
+
 
     @Override
     public String toString() {
@@ -91,7 +88,6 @@ public class Tache {
                 ", date_debut='" + date_debut + '\'' +
                 ", date_fin='" + date_fin + '\'' +
                 ", id_projet=" + id_projet +
-                ", id_ressource=" + id_ressource +
                 '}';
     }
 }

@@ -21,7 +21,9 @@ public class TacheDAO {
                         "id_tache INT AUTO_INCREMENT PRIMARY KEY," +
                         "nom VARCHAR(100) NOT NULL, " +
                         "date_debut DATE NOT NULL, " +
-                        "date_fin DATE NOT NULL " +
+                        "date_fin DATE NOT NULL, " +
+                        "id_projet INT, " +
+                        "id_projet INT" +
                         ")";
                 statement.executeUpdate(createTacheTable);
                 System.out.println("Table 'tache' créée avec succès (si elle n'existait pas).");
@@ -32,11 +34,12 @@ public class TacheDAO {
     }
 
     public void insertTache(Tache tache) {
-        String insertQuery = "INSERT INTO tache (nom, date_debut, date_fin) VALUES (?, ?, ?)";
+        String insertQuery = "INSERT INTO tache (nom, date_debut, date_fin, id_projet) VALUES (?, ?, ?, ?)";
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
             preparedStatement.setString(1, tache.getNom());
             preparedStatement.setString(2, tache.getDate_debut());
             preparedStatement.setString(3, tache.getDate_fin());
+            preparedStatement.setInt(4, tache.getId_projet());
             preparedStatement.executeUpdate();
             System.out.println("Tâche ajoutée avec succès !");
         } catch (SQLException e) {
@@ -55,7 +58,8 @@ public class TacheDAO {
                         resultSet.getInt("id_tache"),
                         resultSet.getString("nom"),
                         resultSet.getString("date_debut"),
-                        resultSet.getString("date_fin")
+                        resultSet.getString("date_fin"),
+                        resultSet.getInt("id_projet")
                 );
             }
         } catch (SQLException e) {
@@ -76,6 +80,7 @@ public class TacheDAO {
                 tache.setNom(resultSet.getString("nom"));
                 tache.setDate_debut(resultSet.getString("date_debut"));
                 tache.setDate_fin(resultSet.getString("date_fin"));
+                tache.setId_projet(resultSet.getInt("id_projet"));
                 taches.add(tache);
             }
         } catch (SQLException e) {
@@ -96,12 +101,13 @@ public class TacheDAO {
     }
 
     public void updateTache(Tache tache) {
-        String query = "UPDATE tache SET nom = ?, date_debut = ?, date_fin = ? WHERE id_tache = ?";
+        String query = "UPDATE tache SET nom = ?, date_debut = ?, date_fin = ?, id_projet = ? WHERE id_tache = ?";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             stmt.setString(1, tache.getNom());
             stmt.setString(2, tache.getDate_debut());
             stmt.setString(3, tache.getDate_fin());
-            stmt.setInt(4, tache.getId_tache());
+            stmt.setInt(4, tache.getId_projet());
+            stmt.setInt(5, tache.getId_tache());
             int rowsAffected = stmt.executeUpdate();
             System.out.println("Tâche mise à jour avec succès ! " + rowsAffected + " ligne(s) affectée(s).");
         } catch (SQLException e) {

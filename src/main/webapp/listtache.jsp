@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
 <%@ page import="Model.Tache" %>
+<%@ page import="DAO.ProjetDAO" %>
+<%@ page import="Model.Projet" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -252,6 +254,7 @@
             <th>Nom</th>
             <th>Date de début</th>
             <th>Date de fin</th>
+            <th>ID Projet</th>
             <th>Actions</th>
         </tr>
         </thead>
@@ -266,8 +269,9 @@
             <td><%= tache.getNom() %></td>
             <td><%= tache.getDate_debut() %></td>
             <td><%= tache.getDate_fin() %></td>
+            <td><%= tache.getId_projet() == 0 ? "Non assigné" : tache.getId_projet() %></td>
             <td class="actions" style="width: 150px;">
-                <button class="action-btn edit-btn" onclick="fillModal('<%= tache.getId_tache() %>', '<%= tache.getNom() %>', '<%= tache.getDate_debut() %>', '<%= tache.getDate_fin() %>')" data-bs-toggle="modal" data-bs-target="#tacheModal"><i class="fas fa-edit"></i></button>
+                <button class="action-btn edit-btn" onclick="fillModal('<%= tache.getId_tache() %>', '<%= tache.getNom() %>', '<%= tache.getDate_debut() %>', '<%= tache.getDate_fin() %>', '<%= tache.getId_projet() %>')" data-bs-toggle="modal" data-bs-target="#tacheModal"><i class="fas fa-edit"></i></button>
                 <button class="action-btn delete-btn" onclick="if(confirm('Confirmer la suppression ?')) window.location.href='<%=request.getContextPath()%>/tache?action=deletetache&id=<%=tache.getId_tache()%>'"><i class="fas fa-trash-alt"></i></button>
             </td>
         </tr>
@@ -300,6 +304,21 @@
                     <div class="mb-3">
                         <label for="date_fin" class="form-label">Date de fin</label>
                         <input type="date" class="form-control" id="date_fin" name="date_fin" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="id_projet" class="form-label">Assigner un projet</label>
+                        <select class="form-control" id="id_projet" name="id_projet" required>
+                            <option value="0">Aucun projet</option>
+                            <%
+                                ProjetDAO projetDAO = new ProjetDAO();
+                                List<Projet> projets = projetDAO.getAllProjets();
+                                for (Projet projet : projets) {
+                            %>
+                            <option value="<%= projet.getIdProjet() %>"><%= projet.getNomProjet() %></option>
+                            <%
+                                }
+                            %>
+                        </select>
                     </div>
                 </form>
             </div>
@@ -334,14 +353,15 @@
 
     navSlide();
 
-    function fillModal(id, nom, dateDebut, dateFin) {
+    function fillModal(id, nom, dateDebut, dateFin, idProjet) {
         document.getElementById('tacheModalLabel').innerText = 'Modifier une tâche';
         document.getElementById('id_tache').value = id;
         document.getElementById('nom').value = nom;
         document.getElementById('date_debut').value = dateDebut;
         document.getElementById('date_fin').value = dateFin;
+        document.getElementById('id_projet').value = idProjet;
         document.getElementById('tacheForm').action = '<%=request.getContextPath()%>/tache?action=updatetache';
-        console.log("Modal rempli : ID=" + id + ", Nom=" + nom + ", Action=" + document.getElementById('tacheForm').action);
+        console.log("Modal rempli : ID=" + id + ", Nom=" + nom + ", Projet ID=" + idProjet + ", Action=" + document.getElementById('tacheForm').action);
     }
 
     function resetModal() {
@@ -350,6 +370,7 @@
         document.getElementById('nom').value = '';
         document.getElementById('date_debut').value = '';
         document.getElementById('date_fin').value = '';
+        document.getElementById('id_projet').value = '0'; // Par défaut : Aucun projet
         document.getElementById('tacheForm').action = '<%=request.getContextPath()%>/tache?action=createtache';
     }
 </script>

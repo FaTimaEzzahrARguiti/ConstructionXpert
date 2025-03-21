@@ -67,11 +67,12 @@ public class TacheServlet extends HttpServlet {
         String nom = request.getParameter("nom");
         String dateDebut = request.getParameter("date_debut");
         String dateFin = request.getParameter("date_fin");
+        int idProjet = Integer.parseInt(request.getParameter("id_projet"));
 
         System.out.println("Tentative de mise à jour - ID: " + id + ", Nom: " + nom +
-                ", DateDébut: " + dateDebut + ", DateFin: " + dateFin);
+                ", DateDébut: " + dateDebut + ", DateFin: " + dateFin + ", Projet ID: " + idProjet);
 
-        Tache tache = new Tache(id, nom, dateDebut, dateFin);
+        Tache tache = new Tache(id, nom, dateDebut, dateFin, idProjet);
         tacheDao.updateTache(tache);
         System.out.println("Tâche mise à jour avec ID : " + id);
         response.sendRedirect(request.getContextPath() + "/tache?action=listtache");
@@ -81,13 +82,13 @@ public class TacheServlet extends HttpServlet {
             throws SQLException, ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id_tache"));
         Tache existingTache = tacheDao.getTache(id);
-        RequestDispatcher dispatcher = request.getRequestDispatcher("listtache.jsp"); // Assurez-vous que ce JSP existe
+        RequestDispatcher dispatcher = request.getRequestDispatcher("listtache.jsp");
         request.setAttribute("tache", existingTache);
         dispatcher.forward(request, response);
     }
 
     private void showNewForm(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        RequestDispatcher dispatcher = request.getRequestDispatcher("listtache.jsp"); // Assurez-vous que ce JSP existe
+        RequestDispatcher dispatcher = request.getRequestDispatcher("listtache.jsp");
         dispatcher.forward(request, response);
     }
 
@@ -95,10 +96,12 @@ public class TacheServlet extends HttpServlet {
         String nom = req.getParameter("nom");
         String dateDebut = req.getParameter("date_debut");
         String dateFin = req.getParameter("date_fin");
+        int idProjet = Integer.parseInt(req.getParameter("id_projet"));
 
         Tache tache = new Tache(nom, dateDebut, dateFin);
+        tache.setId_projet(idProjet);
         tacheDao.insertTache(tache);
-        System.out.println("Nouvelle tâche ajoutée");
+        System.out.println("Nouvelle tâche ajoutée avec Projet ID : " + idProjet);
         resp.sendRedirect(req.getContextPath() + "/tache?action=listtache");
     }
 
@@ -106,7 +109,7 @@ public class TacheServlet extends HttpServlet {
         List<Tache> taches = tacheDao.getAllTaches();
         req.setAttribute("taches", taches);
         System.out.println("Liste des tâches récupérée : " + taches.size() + " tâches");
-        RequestDispatcher dispatcher = req.getRequestDispatcher("listtache.jsp"); // Assurez-vous que ce JSP existe
+        RequestDispatcher dispatcher = req.getRequestDispatcher("listtache.jsp");
         dispatcher.forward(req, resp);
     }
 
