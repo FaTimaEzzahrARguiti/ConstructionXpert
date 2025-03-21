@@ -57,11 +57,10 @@
     <span>ConstructionXpert</span>
   </div>
   <ul class="nav-links">
-    <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
+    <li><a href="index.jsp"><i class="fas fa-home"></i> Accueil</a></li>
     <li><a href="<%=request.getContextPath()%>/projet?action=listprojet"><i class="fas fa-building"></i> Projets</a></li>
     <li><a href="<%=request.getContextPath()%>/ressource?action=listressource"><i class="fas fa-box"></i> Ressources</a></li>
-    <li><a href="#"><i class="fas fa-users"></i> Équipe</a></li>
-    <li><a href="#"><i class="fas fa-chart-line"></i> Tableau de Bord</a></li>
+    <li><a href="<%=request.getContextPath()%>/tache?action=listtache"><i class="fas fa-tasks"></i> Tâches</a></li>
   </ul>
   <div class="burger">
     <div class="line1"></div>
