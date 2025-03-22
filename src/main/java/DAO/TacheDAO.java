@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TacheDAO {
+
     private Connection connection;
 
     public TacheDAO() {
@@ -18,15 +19,24 @@ public class TacheDAO {
             }
             try (Statement statement = connection.createStatement()) {
                 String createTacheTable = "CREATE TABLE IF NOT EXISTS tache (" +
-                        "id_tache INT AUTO_INCREMENT PRIMARY KEY," +
+                        "id_tache INT AUTO_INCREMENT PRIMARY KEY, " +
                         "nom VARCHAR(100) NOT NULL, " +
                         "date_debut DATE NOT NULL, " +
                         "date_fin DATE NOT NULL, " +
                         "id_projet INT, " +
-                        "id_projet INT" +
+                        "FOREIGN KEY (id_projet) REFERENCES projet(idProjet) ON DELETE SET NULL" +
                         ")";
                 statement.executeUpdate(createTacheTable);
                 System.out.println("Table 'tache' créée avec succès (si elle n'existait pas).");
+
+                try (ResultSet rs = connection.getMetaData().getColumns(null, null, "tache", "id_projet")) {
+                    if (!rs.next()) {
+                        statement.executeUpdate("ALTER TABLE tache " +
+                                "ADD COLUMN id_projet INT, " +
+                                "ADD FOREIGN KEY (id_projet) REFERENCES projet(idProjet) ON DELETE SET NULL");
+                        System.out.println("Colonne 'id_projet' ajoutée à la table 'tache'.");
+                    }
+                }
             }
         } catch (SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -49,7 +59,9 @@ public class TacheDAO {
 
     public Tache getTache(int idTache) {
         Tache tache = null;
-        String select = "SELECT * FROM tache WHERE id_tache = ?";
+        String select = "SELECT t.*, p.nomProjet FROM tache t " +
+                "LEFT JOIN projet p ON t.id_projet = p.idProjet " +
+                "WHERE t.id_tache = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(select)) {
             preparedStatement.setInt(1, idTache);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -59,7 +71,8 @@ public class TacheDAO {
                         resultSet.getString("nom"),
                         resultSet.getString("date_debut"),
                         resultSet.getString("date_fin"),
-                        resultSet.getInt("id_projet")
+                        resultSet.getInt("id_projet"),
+                        resultSet.getString("nomProjet")
                 );
             }
         } catch (SQLException e) {
@@ -70,7 +83,8 @@ public class TacheDAO {
 
     public List<Tache> getAllTaches() {
         List<Tache> taches = new ArrayList<>();
-        String select = "SELECT * FROM tache";
+        String select = "SELECT t.*, p.nomProjet FROM tache t " +
+                "LEFT JOIN projet p ON t.id_projet = p.idProjet";
         try (PreparedStatement preparedStatement = connection.prepareStatement(select)) {
             ResultSet resultSet = preparedStatement.executeQuery();
             System.out.println("Récupération des tâches");
@@ -81,6 +95,7 @@ public class TacheDAO {
                 tache.setDate_debut(resultSet.getString("date_debut"));
                 tache.setDate_fin(resultSet.getString("date_fin"));
                 tache.setId_projet(resultSet.getInt("id_projet"));
+                tache.setNomProjet(resultSet.getString("nomProjet"));
                 taches.add(tache);
             }
         } catch (SQLException e) {

@@ -254,7 +254,7 @@
             <th>Nom</th>
             <th>Date de début</th>
             <th>Date de fin</th>
-            <th>ID Projet</th>
+            <th>Projet</th> <!-- Changement de titre de la colonne -->
             <th>Actions</th>
         </tr>
         </thead>
@@ -269,7 +269,7 @@
             <td><%= tache.getNom() %></td>
             <td><%= tache.getDate_debut() %></td>
             <td><%= tache.getDate_fin() %></td>
-            <td><%= tache.getId_projet() == 0 ? "Non assigné" : tache.getId_projet() %></td>
+            <td><%= tache.getNomProjet() != null ? tache.getNomProjet() : "Non assigné" %></td> <!-- Affichage du nom du projet -->
             <td class="actions" style="width: 150px;">
                 <button class="action-btn edit-btn" onclick="fillModal('<%= tache.getId_tache() %>', '<%= tache.getNom() %>', '<%= tache.getDate_debut() %>', '<%= tache.getDate_fin() %>', '<%= tache.getId_projet() %>')" data-bs-toggle="modal" data-bs-target="#tacheModal"><i class="fas fa-edit"></i></button>
                 <button class="action-btn delete-btn" onclick="if(confirm('Confirmer la suppression ?')) window.location.href='<%=request.getContextPath()%>/tache?action=deletetache&id=<%=tache.getId_tache()%>'"><i class="fas fa-trash-alt"></i></button>

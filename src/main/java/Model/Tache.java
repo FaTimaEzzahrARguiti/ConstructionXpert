@@ -1,16 +1,23 @@
 package Model;
 
-import java.util.Date;
-
 public class Tache {
     private int id_tache;
     private String nom;
     private String date_debut;
     private String date_fin;
     private int id_projet;
-
+    private String nomProjet; // Nouveau champ pour le nom du projet
 
     public Tache() {
+    }
+
+    public Tache(int id_tache, String nom, String date_debut, String date_fin, int id_projet, String nomProjet) {
+        this.id_tache = id_tache;
+        this.nom = nom;
+        this.date_debut = date_debut;
+        this.date_fin = date_fin;
+        this.id_projet = id_projet;
+        this.nomProjet = nomProjet;
     }
 
     public Tache(int id_tache, String nom, String date_debut, String date_fin, int id_projet) {
@@ -19,14 +26,6 @@ public class Tache {
         this.date_debut = date_debut;
         this.date_fin = date_fin;
         this.id_projet = id_projet;
-
-    }
-
-    public Tache(int id_tache, String nom, String date_debut, String date_fin) {
-        this.id_tache = id_tache;
-        this.nom = nom;
-        this.date_debut = date_debut;
-        this.date_fin = date_fin;
     }
 
     public Tache(String nom, String date_debut, String date_fin) {
@@ -67,7 +66,6 @@ public class Tache {
         this.date_fin = date_fin;
     }
 
-
     public int getId_projet() {
         return id_projet;
     }
@@ -76,9 +74,13 @@ public class Tache {
         this.id_projet = id_projet;
     }
 
+    public String getNomProjet() {
+        return nomProjet;
+    }
 
-
-
+    public void setNomProjet(String nomProjet) {
+        this.nomProjet = nomProjet;
+    }
 
     @Override
     public String toString() {
@@ -88,6 +90,7 @@ public class Tache {
                 ", date_debut='" + date_debut + '\'' +
                 ", date_fin='" + date_fin + '\'' +
                 ", id_projet=" + id_projet +
+                ", nomProjet='" + nomProjet + '\'' +
                 '}';
     }
 }
