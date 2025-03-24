@@ -3,15 +3,14 @@
 <%@ page import="Model.Tache" %>
 <%@ page import="DAO.ProjetDAO" %>
 <%@ page import="Model.Projet" %>
+<%@ page import="Model.Ressource" %>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestion des Tâches - ConstructionXpert</title>
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
@@ -221,6 +220,15 @@
             background-color: #c0392b;
             color: #fff;
         }
+
+        .assign-btn {
+            background-color: #3498db;
+        }
+
+        .assign-btn:hover {
+            background-color: #2980b9;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
@@ -254,7 +262,8 @@
             <th>Nom</th>
             <th>Date de début</th>
             <th>Date de fin</th>
-            <th>Projet</th> <!-- Changement de titre de la colonne -->
+            <th>Projet</th>
+            <th>Ressources (Quantité)</th> <!-- Nouvelle colonne -->
             <th>Actions</th>
         </tr>
         </thead>
@@ -269,10 +278,12 @@
             <td><%= tache.getNom() %></td>
             <td><%= tache.getDate_debut() %></td>
             <td><%= tache.getDate_fin() %></td>
-            <td><%= tache.getNomProjet() != null ? tache.getNomProjet() : "Non assigné" %></td> <!-- Affichage du nom du projet -->
-            <td class="actions" style="width: 150px;">
+            <td><%= tache.getNomProjet() != null ? tache.getNomProjet() : "Non assigné" %></td>
+            <td><%= tache.getQuantiteRessources() %></td> <!-- Affichage de la quantité -->
+            <td class="actions" style="width: 200px;">
                 <button class="action-btn edit-btn" onclick="fillModal('<%= tache.getId_tache() %>', '<%= tache.getNom() %>', '<%= tache.getDate_debut() %>', '<%= tache.getDate_fin() %>', '<%= tache.getId_projet() %>')" data-bs-toggle="modal" data-bs-target="#tacheModal"><i class="fas fa-edit"></i></button>
                 <button class="action-btn delete-btn" onclick="if(confirm('Confirmer la suppression ?')) window.location.href='<%=request.getContextPath()%>/tache?action=deletetache&id=<%=tache.getId_tache()%>'"><i class="fas fa-trash-alt"></i></button>
+                <button class="action-btn assign-btn" onclick="fillRessourceModal('<%= tache.getId_tache() %>')" data-bs-toggle="modal" data-bs-target="#ressourceModal"><i class="fas fa-box"></i></button>
             </td>
         </tr>
         <%
@@ -283,6 +294,7 @@
     </table>
 </div>
 
+<!-- Modal pour ajouter/modifier une tâche -->
 <div class="modal fade" id="tacheModal" tabindex="-1" aria-labelledby="tacheModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -330,6 +342,47 @@
     </div>
 </div>
 
+<!-- Modal pour assigner une ressource -->
+<div class="modal fade" id="ressourceModal" tabindex="-1" aria-labelledby="ressourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ressourceModalLabel">Assigner une ressource</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="ressourceForm" action="<%=request.getContextPath()%>/tache?action=assignerRessource" method="post">
+                    <input type="hidden" id="ressource_id_tache" name="id_tache">
+                    <div class="mb-3">
+                        <label for="id_ressource" class="form-label">Ressource</label>
+                        <select class="form-control" id="id_ressource" name="id_ressource" required>
+                            <option value="">Sélectionner une ressource</option>
+                            <%
+                                List<Ressource> ressources = (List<Ressource>) request.getAttribute("ressources");
+                                if (ressources != null) {
+                                    for (Ressource ressource : ressources) {
+                            %>
+                            <option value="<%= ressource.getId_ressource() %>"><%= ressource.getNom() %> (Quantité disponible: <%= ressource.getQuantite() %>)</option>
+                            <%
+                                    }
+                                }
+                            %>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantite" class="form-label">Quantité</label>
+                        <input type="number" class="form-control" id="quantite" name="quantite" min="1" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                <button type="submit" form="ressourceForm" class="btn btn-primary">Assigner</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 <script>
@@ -359,9 +412,8 @@
         document.getElementById('nom').value = nom;
         document.getElementById('date_debut').value = dateDebut;
         document.getElementById('date_fin').value = dateFin;
-        document.getElementById('id_projet').value = idProjet;
+        document.getElementById('id_projet').value = idProjet || '0';
         document.getElementById('tacheForm').action = '<%=request.getContextPath()%>/tache?action=updatetache';
-        console.log("Modal rempli : ID=" + id + ", Nom=" + nom + ", Projet ID=" + idProjet + ", Action=" + document.getElementById('tacheForm').action);
     }
 
     function resetModal() {
@@ -370,8 +422,14 @@
         document.getElementById('nom').value = '';
         document.getElementById('date_debut').value = '';
         document.getElementById('date_fin').value = '';
-        document.getElementById('id_projet').value = '0'; // Par défaut : Aucun projet
+        document.getElementById('id_projet').value = '0';
         document.getElementById('tacheForm').action = '<%=request.getContextPath()%>/tache?action=createtache';
+    }
+
+    function fillRessourceModal(idTache) {
+        document.getElementById('ressource_id_tache').value = idTache;
+        document.getElementById('id_ressource').value = '';
+        document.getElementById('quantite').value = '';
     }
 </script>
 </body>

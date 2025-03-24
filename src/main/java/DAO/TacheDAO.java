@@ -59,7 +59,9 @@ public class TacheDAO {
 
     public Tache getTache(int idTache) {
         Tache tache = null;
-        String select = "SELECT t.*, p.nomProjet FROM tache t " +
+        String select = "SELECT t.*, p.nomProjet, " +
+                "COALESCE((SELECT SUM(tr.quantite) FROM tache_ressource tr WHERE tr.id_tache = t.id_tache), 0) AS quantite_ressources " +
+                "FROM tache t " +
                 "LEFT JOIN projet p ON t.id_projet = p.idProjet " +
                 "WHERE t.id_tache = ?";
         try (PreparedStatement preparedStatement = connection.prepareStatement(select)) {
@@ -74,6 +76,7 @@ public class TacheDAO {
                         resultSet.getInt("id_projet"),
                         resultSet.getString("nomProjet")
                 );
+                tache.setQuantiteRessources(resultSet.getInt("quantite_ressources"));
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -83,7 +86,9 @@ public class TacheDAO {
 
     public List<Tache> getAllTaches() {
         List<Tache> taches = new ArrayList<>();
-        String select = "SELECT t.*, p.nomProjet FROM tache t " +
+        String select = "SELECT t.*, p.nomProjet, " +
+                "COALESCE((SELECT SUM(tr.quantite) FROM tache_ressource tr WHERE tr.id_tache = t.id_tache), 0) AS quantite_ressources " +
+                "FROM tache t " +
                 "LEFT JOIN projet p ON t.id_projet = p.idProjet";
         try (PreparedStatement preparedStatement = connection.prepareStatement(select)) {
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -96,6 +101,7 @@ public class TacheDAO {
                 tache.setDate_fin(resultSet.getString("date_fin"));
                 tache.setId_projet(resultSet.getInt("id_projet"));
                 tache.setNomProjet(resultSet.getString("nomProjet"));
+                tache.setQuantiteRessources(resultSet.getInt("quantite_ressources"));
                 taches.add(tache);
             }
         } catch (SQLException e) {

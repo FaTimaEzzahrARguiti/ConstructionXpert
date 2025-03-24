@@ -6,9 +6,11 @@ public class Tache {
     private String date_debut;
     private String date_fin;
     private int id_projet;
-    private String nomProjet; // Nouveau champ pour le nom du projet
+    private String nomProjet;
+    private int quantiteRessources; // Nouvelle variable pour la somme des quantités
 
     public Tache() {
+        this.quantiteRessources = 0; // Initialisation à 0
     }
 
     public Tache(int id_tache, String nom, String date_debut, String date_fin, int id_projet, String nomProjet) {
@@ -18,6 +20,7 @@ public class Tache {
         this.date_fin = date_fin;
         this.id_projet = id_projet;
         this.nomProjet = nomProjet;
+        this.quantiteRessources = 0;
     }
 
     public Tache(int id_tache, String nom, String date_debut, String date_fin, int id_projet) {
@@ -26,12 +29,14 @@ public class Tache {
         this.date_debut = date_debut;
         this.date_fin = date_fin;
         this.id_projet = id_projet;
+        this.quantiteRessources = 0;
     }
 
     public Tache(String nom, String date_debut, String date_fin) {
         this.nom = nom;
         this.date_debut = date_debut;
         this.date_fin = date_fin;
+        this.quantiteRessources = 0;
     }
 
     public int getId_tache() {
@@ -82,6 +87,14 @@ public class Tache {
         this.nomProjet = nomProjet;
     }
 
+    public int getQuantiteRessources() {
+        return quantiteRessources;
+    }
+
+    public void setQuantiteRessources(int quantiteRessources) {
+        this.quantiteRessources = quantiteRessources;
+    }
+
     @Override
     public String toString() {
         return "Tache{" +
@@ -91,6 +104,7 @@ public class Tache {
                 ", date_fin='" + date_fin + '\'' +
                 ", id_projet=" + id_projet +
                 ", nomProjet='" + nomProjet + '\'' +
+                ", quantiteRessources=" + quantiteRessources +
                 '}';
     }
 }
